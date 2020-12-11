@@ -5,6 +5,7 @@ import LoaderButton from "../components/LoaderButton";
 import { onError } from "../libs/errorLib";
 import config from "../config";
 import "./NewNote.css";
+import { API } from "aws-amplify";
 
 export default function NewNote() {
   const file = useRef(null);
@@ -22,7 +23,7 @@ export default function NewNote() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+  
     if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
       alert(
         `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
@@ -30,8 +31,22 @@ export default function NewNote() {
       );
       return;
     }
-
+  
     setIsLoading(true);
+  
+    try {
+      await createNote({ content });
+      history.push("/");
+    } catch (e) {
+      onError(e);
+      setIsLoading(false);
+    }
+  }
+  
+  function createNote(note) {
+    return API.post("notes", "/notes", {
+      body: note
+    });
   }
 
   return (
