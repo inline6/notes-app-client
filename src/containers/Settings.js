@@ -5,17 +5,22 @@ import { onError } from "../libs/errorLib";
 import config from "../config";
 
 export default function Settings() {
-  const history = useHistory();
-  const [isLoading, setIsLoading] = useState(false);
+    const history = useHistory();
+    const [isLoading, setIsLoading] = useState(false);
+    const [stripe, setStripe] = useState(null);
 
-  function billUser(details) {
-    return API.post("notes", "/billing", {
-      body: details
-    });
-  }
+    useEffect(() => {
+        setStripe(window.Stripe(config.STRIPE_KEY));
+    }, []);
 
-  return (
-    <div className="Settings">
-    </div>
-  );
+    function billUser(details) {
+        return API.post("notes", "/billing", {
+            body: details
+        });
+    }
+
+    return (
+        <div className="Settings">
+        </div>
+    );
 }
